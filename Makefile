@@ -1,14 +1,4 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: sthrace <marvin@42.fr>                     +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2020/11/03 15:35:40 by sthrace           #+#    #+#              #
-#    Updated: 2020/11/14 14:02:47 by sthrace          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME	= libft.a
 
 SRCS	= ./ft_atoi.c \
 		  ./ft_bzero.c \
@@ -44,8 +34,14 @@ SRCS	= ./ft_atoi.c \
 		 ./ft_putstr_fd.c \
 		 ./ft_putendl_fd.c \
 		 ./ft_putnbr_fd.c \
-
-BONUS =  ./ft_lstnew.c \
+		 ./ft_charjoin.c \
+		 ./ft_gnl.c \
+		 ./ft_itoa_base.c \
+		 ./ft_nbrlen_base.c \
+		 ./ft_putnbr_base_fd.c \
+		 ./ft_realloc.c \
+		 ./ft_strncmpul.c \
+		 ./ft_lstnew.c \
 		 ./ft_lstadd_front.c \
 		 ./ft_lstsize.c \
 		 ./ft_lstlast.c \
@@ -55,28 +51,57 @@ BONUS =  ./ft_lstnew.c \
 		 ./ft_lstiter.c \
 		 ./ft_lstmap.c \
 
-NAME	= libft.a
-OBJS	= $(SRCS:.c=.o)
+OBJS =		${SRCS:.c=.o}
 HEADER = libft.h
 
-BONUS_OBJ = $(BONUS:.c=.o)
+CFLAGS	= -g3 -Wall -Wextra -Werror
 
-WFLAGS	= -Wall -Wextra -Werror
+all: 		$(NAME)
+
+$(NAME): 	writeComp ${OBJS} writeOK
+			ar rc $(NAME) ${OBJS}
+			ranlib $(NAME)
 
 .c.o:
-	gcc $(WFLAGS) -c $< -o $(<:.c=.o)
-$(NAME): $(OBJS) $(HEADER)
-	ar rc $(NAME) $(OBJS)
-
-bonus: $(NAME) $(BONUS_OBJ)
-		ar rc $(NAME) $(BONUS_OBJ)
-
-all: $(NAME)
+			gcc -c ${CFLAGS} -I. -o $@ $<
+			printf "$(WHITE)██"	
 
 clean:
-	rm -f $(OBJS) $(BONUS_OBJ)
+			rm -f ${OBJS}}
 
-fclean: clean
-	rm -f $(NAME)
+fclean: 	clean
+			rm -f $(NAME)
 
-re: fclean all
+leaks:		
+			valgrind --show-leak-kinds=definite --leak-check=full ./$(NAME)
+
+git:
+			make fclean
+			@git add *
+			@git commit -m "commit"
+			@git push
+
+re: 		fclean all
+
+.PHONY: 	all clean fclean re leaks git
+.SILENT:
+
+RED = \033[1;31m
+GREEN = \033[1;32m
+YELLOW = \033[1;33m
+CYAN = \033[1;36m
+WHITE = \033[1;37m
+DEFAULT = \033[0m
+
+writeComp:
+	echo "$(CYAN)COMPILING...$(DEFAULT)"
+
+writeOK:
+	echo "\n"
+	echo "$(GREEN)$(NAME) => PROJECT COMPILED$(DEFAULT)\n"
+
+writeCL:
+	echo "\n$(YELLOW)*.o CLEANED$(DEFAULT)\n"
+
+writeFCL:
+	echo "$(RED)ALL CLEAN$(DEFAULT)\n"

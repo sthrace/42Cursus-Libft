@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_itoa.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: sthrace <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/08 16:49:33 by sthrace           #+#    #+#             */
-/*   Updated: 2020/11/08 17:06:51 by sthrace          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "libft.h"
 
 static int	ft_nbrlen(unsigned int n)
@@ -25,30 +13,31 @@ static int	ft_nbrlen(unsigned int n)
 	return (len);
 }
 
-char		*ft_itoa(int n)
+char	*ft_itoa(int n)
 {
-	char			*out;
-	unsigned int	nbr;
-	unsigned int	dgt;
+	char			*output;
+	int				len;
 	int				i;
+	int				sign;
 
+	sign = 0;
 	if (n < 0)
-		nbr = (unsigned int)(n * -1);
-	else
-		nbr = (unsigned int)n;
-	dgt = ft_nbrlen(nbr);
-	i = 0;
-	if (!(out = (char *)malloc(sizeof(char) * (dgt + 1 + (n < 0 ? 1 : 0)))))
-		return (NULL);
-	if (n < 0 && (out[i] = '-'))
-		dgt++;
-	i = dgt - 1;
-	while (nbr >= 10)
 	{
-		out[i--] = (char)(nbr % 10 + 48);
-		nbr = nbr / 10;
+		n *= -1;
+		sign = 1;
 	}
-	out[i] = (char)(nbr % 10 + 48);
-	out[dgt] = '\0';
-	return (out);
+	len = ft_nbrlen(n) + sign;
+	i = 0;
+	output = (char *)malloc(sizeof(char) * (len + 1 + sign));
+	if (output == NULL)
+		return (NULL);
+	i = len - 1;
+	while (n >= 10)
+	{
+		output[i--] = (char)(n % 10 + 48);
+		n = n / 10;
+	}
+	output[i] = (char)(n % 10 + 48);
+	output[len + sign] = '\0';
+	return (output);
 }

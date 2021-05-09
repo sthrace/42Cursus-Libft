@@ -1,49 +1,35 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_split.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: sthrace <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/15 14:33:10 by sthrace           #+#    #+#             */
-/*   Updated: 2020/11/15 18:27:17 by sthrace          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "libft.h"
 
-static size_t	ft_wdcnt(char const *s, char c)
+static size_t	ft_len(char const *s, char c, int type)
 {
 	size_t		wdcnt;
 	size_t		i;
 
-	wdcnt = 0;
 	i = 0;
-	while (s[i] && s[i] != '\0')
+	if (type == 1)
 	{
-		while (s[i] && s[i] == c)
-			i++;
-		if (s[i] && s[i] != c)
+		wdcnt = 0;
+		while (s[i] != '\0')
 		{
-			wdcnt++;
+			while (s[i] && s[i] == c)
+				i++;
+			if (s[i] && s[i] != c)
+				wdcnt++;
 			while (s[i] && s[i] != c)
 				i++;
 		}
+		return (wdcnt);
 	}
-	return (wdcnt);
+	if (type == 2)
+	{
+		while (s[i] && s[i] != c)
+			i++;
+		return (i);
+	}
+	return (0);
 }
 
-static size_t	ft_len(char const *s, char c)
-{
-	size_t		i;
-
-	i = 1;
-	while (s[i] && s[i] != c)
-		i++;
-	return (i);
-}
-
-static void		ft_free(char **s, int c)
+static void	ft_free(char **s, int c)
 {
 	while (c)
 	{
@@ -53,7 +39,7 @@ static void		ft_free(char **s, int c)
 	free(s);
 }
 
-static char		*ft_strsplit(char const *s, char c)
+static char	*ft_strsplit(char const *s, char c)
 {
 	size_t		i;
 	size_t		j;
@@ -61,7 +47,8 @@ static char		*ft_strsplit(char const *s, char c)
 
 	i = 0;
 	j = 0;
-	if (!(splitstr = (char *)malloc(sizeof(char *) * (ft_len(s, c)))))
+	splitstr = (char *)malloc(sizeof(char) * (ft_len(s, c, 2) + 1));
+	if (splitstr == NULL)
 		return (NULL);
 	while (s[i] && s[i] != c)
 		splitstr[j++] = s[i++];
@@ -69,7 +56,15 @@ static char		*ft_strsplit(char const *s, char c)
 	return (splitstr);
 }
 
-char			**ft_split(char const *s, char c)
+static void	ft_helper(char ***split, size_t *i, char const *s, char c)
+{
+	*split[*i] = ft_strsplit(s, c);
+	if (*split[*i] == NULL)
+		ft_free(*split, *i - 1);
+	*i += 1;
+}
+
+char	**ft_split(char const *s, char c)
 {
 	size_t		i;
 	size_t		wdcnt;
@@ -78,8 +73,9 @@ char			**ft_split(char const *s, char c)
 	i = 0;
 	if (!s)
 		return (NULL);
-	wdcnt = ft_wdcnt(s, c);
-	if (!(split = (char **)malloc(sizeof(char *) * wdcnt + 1)))
+	wdcnt = ft_len(s, c, 1);
+	split = (char **)malloc(sizeof(char *) * (wdcnt + 1));
+	if (split == NULL)
 		return (NULL);
 	while (i < wdcnt)
 	{
@@ -87,9 +83,7 @@ char			**ft_split(char const *s, char c)
 			s++;
 		if (*s && *s != c)
 		{
-			if (!(split[i] = ft_strsplit(s, c)))
-				ft_free(split, i - 1);
-			i++;
+			ft_helper(&split, &i, s, c);
 			while (*s && *s != c)
 				s++;
 		}
