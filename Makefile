@@ -51,25 +51,25 @@ SRCS	= ./ft_atoi.c \
 		 ./ft_lstiter.c \
 		 ./ft_lstmap.c \
 
-OBJS =		${SRCS:.c=.o}
+OBJS =		$(SRCS:.c=.o)
 HEADER = libft.h
 
+CC = clang
 CFLAGS	= -g3 -Wall -Wextra -Werror
 
 all: 		$(NAME)
 
-$(NAME): 	writeComp ${OBJS} writeOK
+$(NAME): 	COMP $(OBJS) DONE
 			ar rc $(NAME) ${OBJS}
-			ranlib $(NAME)
 
 .c.o:
-			gcc -c ${CFLAGS} -I. -o $@ $<
-			printf "$(WHITE)██"	
+			$(CC) -c $(CFLAGS) -o $@ $<
+			printf "$(WHITE)██"
 
-clean:
+clean:		CLEAN
 			rm -f ${OBJS}}
 
-fclean: 	clean
+fclean: 	clean FCLEAN
 			rm -f $(NAME)
 
 leaks:		
@@ -93,15 +93,11 @@ CYAN = \033[1;36m
 WHITE = \033[1;37m
 DEFAULT = \033[0m
 
-writeComp:
-	echo "$(CYAN)COMPILING...$(DEFAULT)"
-
-writeOK:
-	echo "\n"
-	echo "$(GREEN)$(NAME) => PROJECT COMPILED$(DEFAULT)\n"
-
-writeCL:
-	echo "\n$(YELLOW)*.o CLEANED$(DEFAULT)\n"
-
-writeFCL:
-	echo "$(RED)ALL CLEAN$(DEFAULT)\n"
+COMP:
+	echo "\n$(WHITE)COMPILING $(NAME)$(DEFAULT)"
+DONE:
+	echo "\n$(WHITE)COMPILED $(NAME)$(DEFAULT)"
+CLEAN :
+	echo "$(YELLOW)REMOVING $(NAME) OBJECT FILES $(DEFAULT)"
+FCLEAN :
+	echo "$(RED)REMOVING $(NAME) LIBRARY $(DEFAULT)"
