@@ -1,93 +1,82 @@
 #include "libft.h"
 
-static size_t	ft_len(char const *s, char c, int type)
+static size_t	get_words_number(char const *s, char c)
 {
-	size_t		wdcnt;
-	size_t		i;
+	size_t	count;
 
-	i = 0;
-	if (type == 1)
+	count = 0;
+	while (*s)
 	{
-		wdcnt = 0;
-		while (s[i] != '\0')
-		{
-			while (s[i] && s[i] == c)
-				i++;
-			if (s[i] && s[i] != c)
-				wdcnt++;
-			while (s[i] && s[i] != c)
-				i++;
-		}
-		return (wdcnt);
+		while (*s && *s == c)
+			s++;
+		if (!*s)
+			break ;
+		while (*s && *s != c)
+			s++;
+		count++;
 	}
-	if (type == 2)
+	return (count);
+}
+
+static char	*get_next_word(char const *s, size_t len)
+{
+	char	*rslt;
+	size_t	k;
+
+	rslt = malloc(sizeof(char) * (len + 1));
+	if (rslt == 0)
+		return (0);
+	k = 0;
+	while (k < len)
 	{
-		while (s[i] && s[i] != c)
-			i++;
-		return (i);
+		rslt[k] = s[k];
+		k++;
 	}
+	rslt[k] = '\0';
+	return (rslt);
+}
+
+static char	**free_mem(char **rslt, size_t i)
+{
+	while (i--)
+		free(rslt[i]);
+	free(rslt);
 	return (0);
 }
 
-static void	ft_free(char **s, int c)
+static char	**add_words(const char *s, char c, size_t wnumb, char **rslt)
 {
-	while (c)
-	{
-		free(s[c]);
-		c--;
-	}
-	free(s);
-}
-
-static char	*ft_strsplit(char const *s, char c)
-{
-	size_t		i;
-	size_t		j;
-	char		*splitstr;
+	size_t	i;
+	size_t	len;
 
 	i = 0;
-	j = 0;
-	splitstr = (char *)malloc(sizeof(char) * (ft_len(s, c, 2) + 1));
-	if (splitstr == NULL)
-		return (NULL);
-	while (s[i] && s[i] != c)
-		splitstr[j++] = s[i++];
-	splitstr[j] = '\0';
-	return (splitstr);
-}
-
-static void	ft_helper(char ***split, size_t *i, char const *s, char c)
-{
-	*split[*i] = ft_strsplit(s, c);
-	if (*split[*i] == NULL)
-		ft_free(*split, *i - 1);
-	*i += 1;
+	while (i < wnumb)
+	{
+		while (*s && *s == c)
+			s++;
+		len = 0;
+		while (s[len] && s[len] != c)
+			len++;
+		rslt[i] = get_next_word(s, len);
+		if (!rslt[i])
+			return (free_mem(rslt, i));
+		s += len;
+		i++;
+	}
+	rslt[i] = 0;
+	return (rslt);
 }
 
 char	**ft_split(char const *s, char c)
 {
-	size_t		i;
-	size_t		wdcnt;
-	char		**split;
+	char	**rslt;
+	size_t	wnumb;
 
-	i = 0;
 	if (!s)
-		return (NULL);
-	wdcnt = ft_len(s, c, 1);
-	split = (char **)malloc(sizeof(char *) * (wdcnt + 1));
-	if (split == NULL)
-		return (NULL);
-	while (i < wdcnt)
-	{
-		while (*s && *s == c)
-			s++;
-		if (*s && *s != c)
-		{
-			ft_helper(&split, &i, s, c);
-			while (*s && *s != c)
-				s++;
-		}
-	}
-	split[i] = NULL;
-	return (split);
+		return (0);
+	wnumb = get_words_number(s, c);
+	rslt = malloc(sizeof(char *) * (wnumb + 1));
+	if (!rslt)
+		return (0);
+	return (add_words(s, c, wnumb, rslt));
 }
