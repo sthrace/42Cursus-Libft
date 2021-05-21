@@ -1,9 +1,9 @@
 #include "libft.h"
 
-unsigned long long	ft_atol(const char *str)
+long	ft_atol(const char *str)
 {
 	int					sign;
-	unsigned long long				res;
+	long				res;
 	int					i;
 
 	i = 0;
