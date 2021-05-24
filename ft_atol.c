@@ -1,6 +1,6 @@
 #include "libft.h"
+#include "../includes/push_swap.h"
 #include <limits.h>
-#include <stdio.h>
 
 long	ft_atol(const char *str)
 {
@@ -25,9 +25,6 @@ long	ft_atol(const char *str)
 		i++;
 	}
 	if (res > INT_MAX || res * sign < INT_MIN || ft_strlen(str) > 19)
-	{
-		ft_putendl_fd("\033[1;31mError\033[0m", 2);
-    	exit (1);
-	}
+		ft_exit();
 	return (res * sign);
 }
