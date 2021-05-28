@@ -1,5 +1,4 @@
 #include "libft.h"
-#include "../includes/push_swap.h"
 #include <limits.h>
 
 long	ft_atol(const char *str)
@@ -25,6 +24,6 @@ long	ft_atol(const char *str)
 		i++;
 	}
 	if (res > INT_MAX || res * sign < INT_MIN || ft_strlen(str) > 19)
-		ft_exit();
+		exit(1);
 	return (res * sign);
 }
